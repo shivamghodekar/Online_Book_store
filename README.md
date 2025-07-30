@@ -272,7 +272,7 @@ SELECT * FROM books WHERE stock = 0;
 
 ---
 
-## 📊 Data Preview (Optional)
+## 📊 Data Preview
 
 ```sql
 SELECT * FROM Books;
