@@ -1,4 +1,3 @@
-
 # 📚 OnlineBookstore SQL Project
 
 This project involves designing and querying a simple relational database for an **Online Bookstore** using SQL. The database contains tables for books, customers, and orders, and provides a set of queries ranging from basic to advanced levels.
@@ -62,71 +61,71 @@ CREATE TABLE Orders (
 1. **All books in the "Fiction" genre**
 
 ```sql
-SELECT * FROM Books WHERE Genre = 'Fiction';
+SELECT * FROM books WHERE genre = 'Fiction';
 ```
 
 2. **Books published after 1950**
 
 ```sql
-SELECT * FROM Books WHERE Published_Year > 1950;
+SELECT * FROM books WHERE published_year > 1950;
 ```
 
 3. **Customers from Canada**
 
 ```sql
-SELECT * FROM Customers WHERE Country = 'Canada';
+SELECT * FROM customers WHERE country = 'Canada';
 ```
 
 4. **Orders placed in November 2023**
 
 ```sql
-SELECT * FROM Orders WHERE Order_Date BETWEEN '2023-11-01' AND '2023-11-30';
+SELECT * FROM orders WHERE order_date BETWEEN '2023-11-01' AND '2023-11-30';
 ```
 
-5. **Total stock of books**
+5. **Total stock of books available**
 
 ```sql
-SELECT SUM(Stock) AS Total_Stock FROM Books;
+SELECT SUM(stock) AS Total_Stocks FROM books;
 ```
 
 6. **Most expensive book**
 
 ```sql
-SELECT * FROM Books ORDER BY Price DESC LIMIT 1;
+SELECT * FROM books ORDER BY price DESC LIMIT 1;
 ```
 
 7. **Customers who ordered more than 1 quantity**
 
 ```sql
-SELECT c.Name, b.Title, o.Quantity
-FROM Customers c
-JOIN Orders o ON c.Customer_ID = o.Customer_ID
-JOIN Books b ON o.Book_ID = b.Book_ID
-WHERE o.Quantity > 1;
+SELECT c.name, b.title, o.quantity
+FROM customers AS c
+JOIN orders AS o ON c.customer_id = o.customer_id
+JOIN books AS b ON o.book_id = b.book_id
+WHERE o.quantity > 1;
 ```
 
-8. **Orders where total amount > \$20**
+8. **Orders where total amount exceeds \$20**
 
 ```sql
-SELECT * FROM Orders WHERE Total_Amount > 20;
+SELECT * FROM orders WHERE total_amount > 20;
 ```
 
 9. **List all genres**
 
 ```sql
-SELECT DISTINCT Genre FROM Books;
+SELECT DISTINCT genre FROM books;
 ```
 
-10. **Book with lowest stock**
+10. **Book with the lowest stock**
 
 ```sql
-SELECT * FROM Books ORDER BY Stock ASC LIMIT 1;
+SELECT * FROM books ORDER BY stock ASC LIMIT 1;
 ```
 
-11. **Total revenue**
+11. **Total revenue generated from all orders**
 
 ```sql
-SELECT SUM(Total_Amount) FROM Orders;
+SELECT SUM(total_amount) FROM orders;
 ```
 
 ---
@@ -136,114 +135,139 @@ SELECT SUM(Total_Amount) FROM Orders;
 1. **Total books sold per genre**
 
 ```sql
-SELECT b.Genre, SUM(o.Quantity) AS Total_Sold
-FROM Books b
-JOIN Orders o ON b.Book_ID = o.Book_ID
-GROUP BY b.Genre;
+SELECT b.genre, SUM(o.quantity) AS total_book_sold
+FROM books AS b
+JOIN orders AS o ON b.book_id = o.book_id
+GROUP BY b.genre;
 ```
 
-2. **Average price of 'Fantasy' books**
+2. **Average price of books in the "Fantasy" genre**
 
 ```sql
-SELECT AVG(Price) AS Avg_Price FROM Books WHERE Genre = 'Fantasy';
+SELECT genre, AVG(price) AS Average_Price
+FROM books
+WHERE genre = 'Fantasy'
+GROUP BY 1;
 ```
 
-3. **Customers with at least 2 orders**
+3. **Customers who placed at least 2 orders**
 
 ```sql
-SELECT c.Name, COUNT(*) AS Order_Count
-FROM Customers c
-JOIN Orders o ON c.Customer_ID = o.Customer_ID
-GROUP BY c.Name
-HAVING COUNT(*) >= 2;
+SELECT o.customer_id, c.name, COUNT(o.order_id) AS ORDER_COUNT
+FROM orders o
+JOIN customers c ON o.customer_id = c.customer_id
+GROUP BY o.customer_id, c.name
+HAVING COUNT(order_id) >= 2;
 ```
 
 4. **Most frequently ordered book**
 
 ```sql
-SELECT b.Title, COUNT(*) AS Order_Count
-FROM Books b
-JOIN Orders o ON b.Book_ID = o.Book_ID
-GROUP BY b.Title
-ORDER BY Order_Count DESC
+SELECT b.book_id, b.title, COUNT(o.order_id) AS frequently_ordered
+FROM books AS b
+JOIN orders AS o ON b.book_id = o.book_id
+GROUP BY b.book_id, b.title
+ORDER BY frequently_ordered DESC
 LIMIT 1;
 ```
 
 5. **Top 3 most expensive Fantasy books**
 
 ```sql
-SELECT * FROM Books WHERE Genre = 'Fantasy'
-ORDER BY Price DESC LIMIT 3;
+SELECT * FROM books
+WHERE genre = 'Fantasy'
+ORDER BY price DESC
+LIMIT 3;
 ```
 
-6. **Total quantity sold by each author**
+6. **Total quantity of books sold by each author**
 
 ```sql
-SELECT b.Author, SUM(o.Quantity) AS Total_Sold
-FROM Books b
-JOIN Orders o ON b.Book_ID = o.Book_ID
-GROUP BY b.Author;
+SELECT b.author, SUM(o.quantity) AS total_quantity
+FROM books AS b
+JOIN orders AS o ON b.book_id = o.book_id
+GROUP BY b.author;
 ```
 
 7. **Cities where customers spent over \$30**
 
 ```sql
-SELECT DISTINCT c.City
-FROM Customers c
-JOIN Orders o ON c.Customer_ID = o.Customer_ID
-WHERE o.Total_Amount > 30;
+SELECT DISTINCT c.city
+FROM customers AS c
+JOIN orders AS o ON c.customer_id = o.customer_id
+WHERE o.total_amount > 30;
 ```
 
 8. **Customer who spent the most**
 
 ```sql
-SELECT c.Name, SUM(o.Total_Amount) AS Total_Spent
-FROM Customers c
-JOIN Orders o ON c.Customer_ID = o.Customer_ID
-GROUP BY c.Name
-ORDER BY Total_Spent DESC
+SELECT c.name, SUM(o.total_amount) AS total_spent
+FROM customers AS c
+JOIN orders AS o ON c.customer_id = o.customer_id
+GROUP BY c.name
+ORDER BY total_spent DESC
 LIMIT 1;
 ```
 
-9. **Stock remaining after all orders**
+9. **Stock remaining after fulfilling all orders**
 
 ```sql
-SELECT b.Title, (b.Stock - COALESCE(SUM(o.Quantity), 0)) AS Remaining_Stock
-FROM Books b
-LEFT JOIN Orders o ON b.Book_ID = o.Book_ID
-GROUP BY b.Book_ID;
+SELECT b.title, (b.stock - COALESCE(SUM(o.quantity), 0)) AS remaining_stock
+FROM books AS b
+LEFT JOIN orders AS o ON b.book_id = o.book_id
+GROUP BY b.book_id;
 ```
 
 ---
 
 ## 🧩 Additional Practice Queries
 
-1. **Customers with no orders**
+1. **Retrieve the names and emails of all customers**
 
 ```sql
-SELECT c.Name FROM Customers c
-LEFT JOIN Orders o ON c.Customer_ID = o.Customer_ID
-WHERE o.Order_ID IS NULL;
+SELECT name, email FROM customers;
 ```
 
-2. **Books out of stock**
+2. **Show the titles and prices of all books priced above \$15**
 
 ```sql
-SELECT * FROM Books WHERE Stock = 0;
+SELECT title, price FROM books WHERE price > 15;
 ```
 
-3. **Orders by 'Christine Maldonado'**
+3. **List all books sorted by published year in descending order**
 
 ```sql
-SELECT o.* FROM Orders o
-JOIN Customers c ON o.Customer_ID = c.Customer_ID
-WHERE c.Name = 'Christine Maldonado';
+SELECT * FROM books ORDER BY published_year DESC;
 ```
 
-4. **Books priced above \$15**
+4. **Retrieve all orders placed by 'Christine Maldonado'**
 
 ```sql
-SELECT Title, Price FROM Books WHERE Price > 15;
+SELECT o.*
+FROM orders AS o
+JOIN customers AS c ON o.customer_id = c.customer_id
+WHERE c.name = 'Christine Maldonado';
+```
+
+5. **Find the number of customers in each country**
+
+```sql
+SELECT country, COUNT(*) FROM customers GROUP BY country;
+```
+
+6. **Customers who have not placed any orders**
+
+```sql
+SELECT c.name
+FROM customers AS c
+LEFT JOIN orders AS o ON c.customer_id = o.customer_id
+WHERE o.order_id IS NULL;
+```
+
+7. **Books that are out of stock**
+
+```sql
+SELECT * FROM books WHERE stock = 0;
 ```
 
 ---
